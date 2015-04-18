@@ -1,14 +1,16 @@
 'use strict';
 
-angular.module('myApp.view1', ['ngRoute'])
+var entriesApp = angular.module('myApp.home', ['ngRoute', 'configuration']);
 
-.config(['$routeProvider', function($routeProvider) {
-  $routeProvider.when('/view1', {
-    templateUrl: 'view1/view1.html',
-    controller: 'View1Ctrl'
-  });
-}])
-
-.controller('View1Ctrl', [function() {
-
+entriesApp.config(['$routeProvider', function ($routeProvider) {
+    $routeProvider.when('/view1', {
+        templateUrl: 'view1/view1.html',
+        controller: 'EntriesCtrl'
+    });
 }]);
+
+entriesApp.controller('EntriesCtrl', function ($scope, $http, ENTRY_URL) {
+    $http.get(ENTRY_URL).then(function (response) {
+        $scope.entries = response.data;
+    });
+});
