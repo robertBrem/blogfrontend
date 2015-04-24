@@ -18,24 +18,47 @@
 
             <hr>
 
-            <!-- Comments Form -->
             <div class="well">
                 <h4>Leave a Comment:</h4>
 
                 <form role="form">
                     <div class="form-group">
-                        <textarea class="form-control" rows="3"></textarea>
+                        <label for="inputAuthor">Author</label>
+                        <input type="text" class="form-control" id="inputAuthor"
+                               placeholder="Author of this comment"
+                               ng-model="comment.author"/>
                     </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
+
+                    <div class="form-group">
+                        <label for="inputContent">Content</label>
+                        <textarea class="form-control" rows="4" id="inputContent"
+                                  placeholder="The comment" ng-model="comment.content"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" ng-click="create(comment)" class="btn btn-primary">Post <span
+                                class="glyphicon glyphicon-chevron-right"></span></button>
+                    </div>
                 </form>
             </div>
 
             <hr>
 
-            <!-- Posted Comments -->
+            <div class="media" ng-repeat="comment in entry.comments | orderBy:'-creationDate'">
+                <span class="pull-left">
+                    <img class="media-object" src="http://placehold.it/64x64" alt="">
+                </span>
 
-            <!-- Comment -->
-            <div class="media">
+                <div class="media-body">
+                    <h4 class="media-heading">{{ comment.author }}
+                        <small>{{comment.creationDate | date:"dd.MM.yyyy 'at' HH:mm"}}
+                        </small>
+                    </h4>
+                    {{ comment.content }}
+                </div>
+            </div>
+
+            <!--div class="media">
                 <a class="pull-left" href="#">
                     <img class="media-object" src="http://placehold.it/64x64" alt="">
                 </a>
@@ -50,7 +73,6 @@
                 </div>
             </div>
 
-            <!-- Comment -->
             <div class="media">
                 <a class="pull-left" href="#">
                     <img class="media-object" src="http://placehold.it/64x64" alt="">
@@ -63,7 +85,6 @@
                     Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo.
                     Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi
                     vulputate fringilla. Donec lacinia congue felis in faucibus.
-                    <!-- Nested Comment -->
                     <div class="media">
                         <a class="pull-left" href="#">
                             <img class="media-object" src="http://placehold.it/64x64" alt="">
@@ -78,9 +99,8 @@
                             condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
                         </div>
                     </div>
-                    <!-- End Nested Comment -->
-                </div>
-            </div>
+        </div>
+    </div -->
 
         </div>
     </div>
