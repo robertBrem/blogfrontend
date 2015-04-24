@@ -2,7 +2,7 @@
 
     <div class="row" ng-repeat="entry in entries | orderBy:'-creationDate'">
         <div class="col-xs-12">
-            <h2>{{entry.title}}</h2>
+            <h2><a href="#/posts/{{entry.id}}">{{entry.title}}</a></h2>
 
             <p>{{entry.teaser}}</p>
 
@@ -11,7 +11,7 @@
             </p>
             <ul class="list-inline">
                 <li>{{ entry.author }}</li>
-                <li>{{ entry.creationDate | date:"'am' dd.MM.yyyy 'um' HH:mm" }}</li>
+                <li>{{ entry.creationDate | date:"dd.MM.yyyy 'at' HH:mm" }}</li>
                 <li><i class="glyphicon glyphicon-comment"></i> {{entry.comments.length}} Comment{{entry.comments.length
                     != 1 ? 's' : ''}}
                 </li>
