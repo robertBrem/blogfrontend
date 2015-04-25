@@ -1,6 +1,6 @@
 'use strict';
 
-var entriesApp = angular.module('myApp.posts', ['ngRoute', 'configuration']);
+var entriesApp = angular.module('myApp.posts', ['ngRoute', 'ngSanitize', 'configuration']);
 
 entriesApp.config(['$routeProvider', function ($routeProvider) {
     $routeProvider.when('/posts/:id', {
