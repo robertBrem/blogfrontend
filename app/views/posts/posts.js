@@ -15,7 +15,7 @@ entriesApp.controller('PostsCtrl', function ($scope, $http, $routeParams, ENTRY_
     });
 
     $scope.create = function (comment) {
-        $http.post(ENTRY_URL + $routeParams.urlTitle + '/comments',
+        $http.post(ENTRY_URL + $scope.entry.id + '/comments',
             comment)
             .then(function (response) {
                 $scope.entry.comments.push(response.data);
