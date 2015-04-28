@@ -2,7 +2,7 @@
 
     <div class="row" ng-repeat="entry in entries | orderBy:'-creationDate'">
         <div class="col-xs-12">
-            <h2><a href="#/posts/{{entry.id}}">{{entry.title}}</a></h2>
+            <h2><a href="#/posts/{{ entry.urlTitle }}">{{entry.title}}</a></h2>
 
             <p>{{entry.teaser}}</p>
 
