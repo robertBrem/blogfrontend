@@ -19,6 +19,7 @@
     <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.3/styles/monokai.min.css">
 </head>
 <body>
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -26,7 +27,7 @@
         <a class="navbar-brand" href="#/home">Home</a>
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
             <span class="sr-only">Toggle navigation</span>
-            <!--span class="icon-bar"></span-->
+            <span class="icon-bar"></span>
         </button>
     </div>
     <div class="collapse navbar-collapse">
@@ -62,33 +63,15 @@
 <div class="container-fluid">
 
     <div class="col-sm-3">
-        <h2>Hot News</h2>
-
         <div class="panel panel-default">
-            <div class="panel-heading">Title</div>
-            <div class="panel-body">Sed ac orci quis tortor imperdiet venenatis. Duis elementum auctor accumsan.
-                Aliquam in felis sit amet augue.
+            <div class="panel-heading">Latest News Headlines</div>
+            <div class="panel-body">
+                <a href="http://blog.eisele.net/2015/04/continuous-delivery-with-docker.html" target="_blank">
+                    Continuous Delivery with Docker Containers and Java EE
+                </a>
+                &nbsp;
+                <small>30.04.2015</small>
             </div>
-        </div>
-        <hr>
-        <div class="panel panel-default">
-            <div class="panel-heading">Title</div>
-            <div class="panel-body">Content here..</div>
-        </div>
-        <hr>
-        <div class="panel panel-default">
-            <div class="panel-heading">Title</div>
-            <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra varius quam
-                sit amet vulputate.
-                Quisque mauris augue, molestie tincidunt condimentum vitae, gravida a libero. Aenean sit amet felis
-                dolor, in sagittis nisi. Sed ac orci quis tortor imperdiet venenatis. Duis elementum auctor accumsan.
-                Aliquam in felis sit amet augue.
-            </div>
-        </div>
-        <hr>
-        <div class="panel panel-default">
-            <div class="panel-heading">Title</div>
-            <div class="panel-body">Content here..</div>
         </div>
         <hr>
     </div>
@@ -97,34 +80,61 @@
     <div ng-view></div>
 
     <!--right-->
-    <div class="col-sm-3">
-        <h2>About me</h2>
+    <div class="col-sm-2">
+        <div class="panel panel-default">
+            <div class="panel-heading">Robert Brem</div>
+            <div class="panel-body">
+                <img src="images/me.jpg" alt="Me"/>
 
-        <div class="panel panel-default">
-            <div class="panel-heading">Title</div>
-            <div class="panel-body">Sed ac orci quis tortor imperdiet venenatis. Duis elementum auctor accumsan.
-                Aliquam in felis sit amet augue.
+                <p>
+                    Software Engineer<br/>
+                    Transhumanist<br/>
+                    Optimist
+                </p>
             </div>
         </div>
         <hr>
         <div class="panel panel-default">
-            <div class="panel-heading">Title</div>
-            <div class="panel-body">Content here..</div>
-        </div>
-        <hr>
-        <div class="panel panel-default">
-            <div class="panel-heading">Title</div>
-            <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra varius quam
-                sit amet vulputate.
-                Quisque mauris augue, molestie tincidunt condimentum vitae, gravida a libero. Aenean sit amet felis
-                dolor, in sagittis nisi. Sed ac orci quis tortor imperdiet venenatis. Duis elementum auctor accumsan.
-                Aliquam in felis sit amet augue.
+            <div class="panel-heading">Technical<br/>Topics of Interest</div>
+            <div class="panel-body">
+                <a href="http://kubernetes.io/" target="_blank">Kubernetes</a><br/>
+                <a href="https://www.docker.com/" target="_blank">Docker</a><br/>
+                <a href="http://netflix.github.io/#repo" target="_blank">Netflix OSS</a><br/>
+                <a href="https://github.com/javaee-samples" target="_blank">Java EE</a><br/>
+                <a href="https://github.com/angular/angular-seed" target="_blank">AngularJS</a>
             </div>
         </div>
         <hr>
         <div class="panel panel-default">
-            <div class="panel-heading">Title</div>
-            <div class="panel-body">Content here..</div>
+            <div class="panel-heading">Architectural<br/>Topics of Interest</div>
+            <div class="panel-body">
+                <a href="https://www.youtube.com/watch?v=2rKEveL55TY" target="_blank">Microservices</a><br/>
+                <a href="https://www.youtube.com/watch?v=uk-CF7klLdA" target="_blank">Programmer Anarchy</a><br/>
+                <a href="https://jaxenter.de/unkaputtbar-einfuehrung-resilient-software-design-15119" target="_blank">
+                    Resilient Software Design
+                </a><br/>
+                <a href="https://www.youtube.com/watch?v=TcbmRRy-vno" target="_blank">Lean Enterprise</a><br/>
+                <a href="http://www.amazon.de/The-Phoenix-Project-Helping-Business/dp/0988262592"
+                   target="_blank">DevOps</a>
+            </div>
+        </div>
+        <hr>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <a href="https://www.youtube.com/watch?v=uk-CF7klLdA" target="_blank">
+                    <img src="images/anarchy.png" alt="Programmer Anarchy"/>
+                </a>
+            </div>
+        </div>
+        <hr>
+        <div class="panel panel-default">
+            <div class="panel-heading">Other<br/>Topics of Interest</div>
+            <div class="panel-body">
+                <a href="https://www.youtube.com/watch?v=L4wyU6GTCPE" target="_blank">American Football</a><br/>
+                <a href="https://www.youtube.com/watch?v=QCsiBLz6qqo" target="_blank">Arduino</a><br/>
+                <a href="https://www.youtube.com/watch?v=QJsHRltEVBc" target="_blank">Technological Singularity</a><br/>
+                <a href="https://www.youtube.com/watch?v=M0b6DMGExKo" target="_blank">Poker</a>
+            </div>
         </div>
         <hr>
     </div>
@@ -132,15 +142,19 @@
     <hr>
 </div>
 <!--/container-fluid-->
-<!-- script references -->
+<!-- script references -->cd
 <script src="bower_components/jquery/dist/jquery.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-route/angular-route.js"></script>
 <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+<script src="bower_components/angular-highlightjs/angular-highlightjs.js"></script>
+<script src="bower_components/highlightjs/highlight.pack.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.3/highlight.min.js"></script>
 <script src="app.js"></script>
 <script src="configuration.js"></script>
 <script src="views/home/home.js"></script>
+<script src="views/about_me/about_me.js"></script>
 <script src="views/posts/posts.js"></script>
 </body>
 </html>
