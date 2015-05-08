@@ -10,7 +10,9 @@ entriesApp.config(['$routeProvider', function ($routeProvider) {
 }]);
 
 entriesApp.controller('EntriesCtrl', function ($scope, $http, ENTRY_URL) {
+
     $http.get(ENTRY_URL).then(function (response) {
         $scope.entries = response.data;
     });
+
 });
