@@ -1,0 +1,475 @@
+<h2>Create the Java EE REST service</h2>
+For this service I use IntelliJ as IDE and Wildfly as application server. You can simply download these tools and unzip it on your machine.
+<br/>
+I create a Project for every use case and a Module per service. We start with creating a new Project.<br/>
+<pre>File -> New -> Project…</pre>
+Then we choose the Empty Project.<br/>
+<pre>Project name:		Pokertracker
+Project location:	~/IdeaProjects/Pokertracker</pre>
+<pre>Finish</pre>
+Now we create a new Module
+<pre>+ -> New Module</pre>
+I always start a new Java EE project with the javaee7-essentials-archetype from com.airhacks by Adam Bien. It contains just the minimum you need to start.
+<pre>Maven -> Check Create from archetype -> com.airhacks:javaee7-essentials-archtype -> Next</pre>
+Hint: Do not forget to select JDK 1.8 as your Module SDK.
+<pre>GroupId:	expert.optimist
+Artifactid:	pokerservice
+Version:	1.0-SNAPSHOT</pre>
+<pre>Next</pre>
+<pre>Module name:		Pokerservice
+Content root:		/home/Robert/IdeaProjects/Pokertracker/Pokerservice
+Module file location:	/home/Robert/IdeaProjects/Pokertracker/Pokerservice</pre>
+<pre>Finish</pre>
+Confirm that you want to edit the pom.xml anyway.
+<pre>OK</pre>
+The console output should be something like:
+<pre><code class="hljs">/usr/lib/jvm/java-8-oracle/bin/java
+    -Dmaven.home=/home/robert/Schreibtisch/idea-IU-141.178.9/plugins/maven/lib/maven3
+    -Dclassworlds.conf=/home/robert/Schreibtisch/idea-IU-141.178.9/plugins/maven/lib/maven3/bin/m2.conf
+    -Dfile.encoding=UTF-8 -classpath
+    /home/robert/Schreibtisch/idea-IU-141.178.9/plugins/maven/lib/maven3/boot/plexus-classworlds-2.4.jar
+    org.codehaus.classworlds.Launcher -Didea.version=14.1.1 -DinteractiveMode=false -DgroupId=expert.optimist
+    -DartifactId=pokerservice -Dversion=1.0-SNAPSHOT -DarchetypeGroupId=com.airhacks
+    -DarchetypeArtifactId=javaee7-essentials-archetype -DarchetypeVersion=1.2
+    org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate
+    [INFO] Scanning for projects...
+    [INFO]
+    [INFO] ------------------------------------------------------------------------
+    [INFO] Building Maven Stub Project (No POM) 1
+    [INFO] ------------------------------------------------------------------------
+    [INFO]
+    [INFO] >>> maven-archetype-plugin:2.3:generate (default-cli) @ standalone-pom >>>
+    [INFO]
+    [INFO] <<< maven-archetype-plugin:2.3:generate (default-cli) @ standalone-pom <<<
+    [INFO]
+    [INFO] --- maven-archetype-plugin:2.3:generate (default-cli) @ standalone-pom ---
+    [INFO] Generating project in Batch mode
+    [INFO] Archetype repository not defined. Using the one from [com.airhacks:javaee7-essentials-archetype:1.2] found in
+    catalog remote
+    [INFO] ----------------------------------------------------------------------------
+    [INFO] Using following parameters for creating project from Archetype: javaee7-essentials-archetype:1.2
+    [INFO] ----------------------------------------------------------------------------
+    [INFO] Parameter: groupId, Value: expert.optimist
+    [INFO] Parameter: artifactId, Value: pokerservice
+    [INFO] Parameter: version, Value: 1.0-SNAPSHOT
+    [INFO] Parameter: package, Value: expert.optimist
+    [INFO] Parameter: packageInPathFormat, Value: expert/optimist
+    [INFO] Parameter: package, Value: expert.optimist
+    [INFO] Parameter: version, Value: 1.0-SNAPSHOT
+    [INFO] Parameter: groupId, Value: expert.optimist
+    [INFO] Parameter: artifactId, Value: pokerservice
+    [INFO] project created from Archetype in dir: /tmp/archetype0tmp/pokerservice
+    [INFO] ------------------------------------------------------------------------
+    [INFO] BUILD SUCCESS
+    [INFO] ------------------------------------------------------------------------
+    [INFO] Total time: 16.257s
+    [INFO] Finished at: Fri May 08 12:35:53 CEST 2015
+    [INFO] Final Memory: 14M/121M
+    [INFO] ------------------------------------------------------------------------
+    [INFO] Maven execution finished</code></pre>
+Open the Pokerservice Project and have a look at the only file the pom.xml.
+<pre><code class="hljs">
+    &lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;groupId&gt;expert.optimist&lt;/groupId&gt;
+    &lt;artifactId&gt;pokerservice&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+    &lt;packaging&gt;war&lt;/packaging&gt;
+    &lt;dependencies&gt;
+    &lt;dependency&gt;
+    &lt;groupId&gt;javax&lt;/groupId&gt;
+    &lt;artifactId&gt;javaee-api&lt;/artifactId&gt;
+    &lt;version&gt;7.0&lt;/version&gt;
+    &lt;scope&gt;provided&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+    &lt;build&gt;
+    &lt;finalName&gt;pokerservice&lt;/finalName&gt;
+    &lt;/build&gt;
+    &lt;properties&gt;
+    &lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;
+    &lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt;
+    &lt;failOnMissingWebXml&gt;false&lt;/failOnMissingWebXml&gt;
+    &lt;/properties&gt;
+    &lt;/project&gt;
+</code></pre>
+It is pretty small and simple and defines the project configuration:
+<ul>
+    <li>Only one dependency to Java EE 7</li>
+    <li>Use Java 8</li>
+    <li>Do not use a web.xml</li>
+</ul>
+Hint: Sometimes you have to tell IntelliJ that your Project is a Java project. You can achieve that with:
+Right click on the <code>Project -> Maven -> Generate Sources and Update Folders</code>
+Now we can start coding!<br/>
+We create a package <code>expert.optimist.pokertracker.pokerservice.boundary</code><br/>
+In this package we create a file called <code>PokerserviceEndpoint</code>
+<pre><code class="hljs">package expert.optimist.pokertracker.pokerservice.boundary;
+
+    import javax.ws.rs.GET;
+    import javax.ws.rs.Path;
+    import javax.ws.rs.Produces;
+    import javax.ws.rs.core.MediaType;
+    import java.util.HashSet;
+    import java.util.Set;
+
+    @Path("players")
+    public class PokerserviceEndpoint {
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Set &lt;String&gt; getAll() {
+    Set&lt;String&gt; players = new HashSet<>();
+    players.add("Robert Brem");
+    players.add("Dan Lopez");
+    return players;
+    }
+    }</code></pre>
+<code>@Path</code> defines the REST endpoint for this service. This name should always be a noun and in plural. That leads to
+an easy readable URL like:
+<pre>http://poker.optimist.expert/pokerservice/resources/players/robert_brem/tournaments/the_big_one_2015</pre>
+Every part of this URL is executable and returns a meaningful response.
+<dl>
+    <dt>players</dt>
+    <dd>returns all players</dd>
+    <dt>players/robert_brem</dt>
+    <dd>returns the player with the unique nickname robert_brem</dd>
+    <dt>players/robert_brem/tournaments</dt>
+    <dd>returns all played tournaments by the user robert_brem</dd>
+    <dt>players/robert_brem/tournaments/the_big_one_2015</dt>
+    <dd>returns user statistics of robert_brem from the tournament with
+        the unique name the_big_one_2015
+    </dd>
+</dl>
+More tips about a good REST API can be found <a
+        href="https://pages.apigee.com/rs/apigee/images/api-design-ebook-2012-03.pdf"
+        target="_blank">here</a><br/>
+<dl>
+    <dt>@GET</dt>
+    <dd>exposes this method as HTTP – GET</dd>
+    <dt>@Produces(MediaType.APPLICATION_JSON)</dt>
+    <dd>transforms our List of Strings in a JSON-Array. We do not have to do this
+        transformation by ourselves!
+    </dd>
+</dl>
+That we can test our service we need to create another class, the REST configuration.<br/>
+This is our <code>RESTConfiguration</code> class:
+<pre><code class="hljs">package expert.optimist.pokertracker.pokerservice;
+
+    import javax.ws.rs.ApplicationPath;
+    import javax.ws.rs.core.Application;
+
+    @ApplicationPath("resources")
+    public class RESTConfiguration extends Application {
+    }</code></pre>
+And that is all! We can now test our service with Wildfly.<br/>
+At first you have to create a new <strong>Run Configuration</strong> for our Wildfly:
+<pre>Run -> Edit Configurations…</pre>
+<pre>JBoss Server -> Local</pre>
+<pre>Name: Wildfly 8.2.0
+Application server: JBoss 8.2.0.Final
+Check Use alternative JRE: /usr/lib/jvm/java-8-oracle/jre</pre>
+Change to the tab <strong>Deployment</strong>
+<pre>+ -> Artifact</pre>
+<pre>Pokerservice.war -> OK</pre>
+<pre>OK</pre>
+Now we can start the server with our <code>pokerservice</code> by clicking the play button on the upper right.<br/>
+The console output should look like:
+<pre><code class="hljs">/usr/lib/jvm/java-8-oracle/jre/bin/java -classpath
+    /home/robert/Schreibtisch/idea-IU-141.178.9/lib/idea_rt.jar:/home/robert/Schreibtisch/idea-IU-141.178.9/lib/util.jar
+    -Dfile.encoding=UTF-8 com.intellij.rt.execution.CommandLineWrapper /tmp/classpath0.tmp
+    com.intellij.javaee.oss.process.JavaeeProcess 55406 com.intellij.javaee.oss.jboss.agent.JBoss71Agent
+    /home/robert/Schreibtisch/wildfly-8.2.0.Final/bin/standalone.sh
+    [2015-05-08 01:26:12,622] Artifact Pokerservice:war: Server is not connected. Deploy is not available.
+    Detected server admin port: 9990
+    Detected server http port: 8080
+    =========================================================================
+
+    JBoss Bootstrap Environment
+
+    JBOSS_HOME: /home/robert/Schreibtisch/wildfly-8.2.0.Final
+
+    JAVA: /usr/lib/jvm/java-8-oracle/jre/bin/java
+
+    JAVA_OPTS: -server -Xms64m -Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true
+    -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true
+
+    =========================================================================
+
+    [0m13:26:10,337 INFO [org.jboss.modules] (main) JBoss Modules version 1.3.3.Final
+    [0m[0m13:26:11,429 INFO [org.jboss.msc] (main) JBoss MSC version 1.2.2.Final
+    [0m[0m13:26:11,755 INFO [org.jboss.as] (MSC service thread 1-2) JBAS015899: WildFly 8.2.0.Final "Tweek" starting
+    [0mJava HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=256m; support was removed in 8.0
+    [0m13:26:15,967 INFO [org.jboss.as.server] (Controller Boot Thread) JBAS015888: Creating http management service
+    using socket-binding (management-http)
+    [0m[0m13:26:16,013 INFO [org.xnio] (MSC service thread 1-1) XNIO version 3.3.0.Final
+    [0m[0m13:26:16,043 INFO [org.xnio.nio] (MSC service thread 1-1) XNIO NIO Implementation Version 3.3.0.Final
+    [0m[0m13:26:16,142 INFO [org.wildfly.extension.io] (ServerService Thread Pool -- 33) WFLYIO001: Worker 'default'
+    has auto-configured to 2 core threads with 16 task threads based on your 1 available processors
+    [0m[0m13:26:16,143 INFO [org.jboss.as.clustering.infinispan] (ServerService Thread Pool -- 34) JBAS010280:
+    Activating Infinispan subsystem.
+    [0m[0m13:26:16,166 INFO [org.jboss.as.naming] (ServerService Thread Pool -- 42) JBAS011800: Activating Naming
+    Subsystem
+    [0m[0m13:26:16,194 INFO [org.jboss.as.security] (ServerService Thread Pool -- 47) JBAS013171: Activating Security
+    Subsystem
+    [0m[33m13:26:16,204 WARN [org.jboss.as.txn] (ServerService Thread Pool -- 48) JBAS010153: Node identifier property
+    is set to the default value. Please make sure it is unique.
+    [0m[0m13:26:16,258 INFO [org.jboss.as.webservices] (ServerService Thread Pool -- 50) JBAS015537: Activating
+    WebServices Extension
+    [0m[0m13:26:16,295 INFO [org.jboss.remoting] (MSC service thread 1-1) JBoss Remoting version 4.0.6.Final
+    [0m[0m13:26:16,292 INFO [org.jboss.as.jsf] (ServerService Thread Pool -- 40) JBAS012615: Activated the following
+    JSF Implementations: [main]
+    [0m[0m13:26:16,407 INFO [org.jboss.as.security] (MSC service thread 1-1) JBAS013170: Current PicketBox
+    version=4.0.21.Final
+    [0m[0m13:26:16,422 INFO [org.wildfly.extension.undertow] (ServerService Thread Pool -- 49) JBAS017502: Undertow
+    1.1.0.Final starting
+    [0m[0m13:26:16,427 INFO [org.jboss.as.connector.subsystems.datasources] (ServerService Thread Pool -- 29)
+    JBAS010403: Deploying JDBC-compliant driver class org.h2.Driver (version 1.3)
+    [0m[0m13:26:16,589 INFO [org.wildfly.extension.undertow] (MSC service thread 1-1) JBAS017502: Undertow 1.1.0.Final
+    starting
+    [0m[0m13:26:16,790 INFO [org.jboss.as.naming] (MSC service thread 1-1) JBAS011802: Starting Naming Service
+    [0m[0m13:26:16,827 INFO [org.jboss.as.connector.logging] (MSC service thread 1-1) JBAS010408: Starting JCA
+    Subsystem (IronJacamar 1.1.9.Final)
+    [0m[0m13:26:16,864 INFO [org.wildfly.extension.undertow] (ServerService Thread Pool -- 49) JBAS017527: Creating
+    file handler for path /home/robert/Schreibtisch/wildfly-8.2.0.Final/welcome-content
+    [0m[0m13:26:17,137 INFO [org.jboss.as.mail.extension] (MSC service thread 1-1) JBAS015400: Bound mail session
+    [java:jboss/mail/Default]
+    [0m[0m13:26:17,149 INFO [org.jboss.as.connector.deployers.jdbc] (MSC service thread 1-2) JBAS010417: Started
+    Driver service with driver-name = h2
+    [0m[0m13:26:17,319 INFO [org.wildfly.extension.undertow] (MSC service thread 1-2) JBAS017525: Started server
+    default-server.
+    [0m[0m13:26:17,392 INFO [org.wildfly.extension.undertow] (MSC service thread 1-2) JBAS017531: Host default-host
+    starting
+    [0m[0m13:26:17,667 INFO [org.wildfly.extension.undertow] (MSC service thread 1-2) JBAS017519: Undertow HTTP
+    listener default listening on /127.0.0.1:8080
+    [0m[0m13:26:17,965 INFO [org.jboss.as.server.deployment.scanner] (MSC service thread 1-1) JBAS015012: Started
+    FileSystemDeploymentService for directory /home/robert/Schreibtisch/wildfly-8.2.0.Final/standalone/deployments
+    [0m[0m13:26:18,011 INFO [org.jboss.as.server.deployment] (MSC service thread 1-1) JBAS015876: Starting deployment
+    of "postgresql-9.4-1201.jdbc41.jar" (runtime-name: "postgresql-9.4-1201.jdbc41.jar")
+    [0m[0m13:26:19,236 INFO [org.jboss.ws.common.management] (MSC service thread 1-2) JBWS022052: Starting JBoss Web
+    Services - Stack CXF Server 4.3.2.Final
+    [0m[0m13:26:19,523 INFO [org.jboss.as.connector.subsystems.datasources] (MSC service thread 1-2) JBAS010400: Bound
+    data source [java:jboss/datasources/ExampleDS]
+    [0m[0m13:26:19,689 INFO [org.jboss.as.connector.deployers.jdbc] (MSC service thread 1-2) JBAS010404: Deploying
+    non-JDBC-compliant driver class org.postgresql.Driver (version 9.4)
+    [0m[0m13:26:19,757 INFO [org.jboss.as.connector.deployers.jdbc] (MSC service thread 1-1) JBAS010417: Started
+    Driver service with driver-name = postgresql-9.4-1201.jdbc41.jar
+    [0m[0m13:26:19,772 INFO [org.jboss.as.connector.subsystems.datasources] (MSC service thread 1-2) JBAS010400: Bound
+    data source [java:jboss/jdbc/blogserviceDS]
+    [0m[0m13:26:20,391 INFO [org.jboss.as.server] (ServerService Thread Pool -- 30) JBAS018559: Deployed
+    "postgresql-9.4-1201.jdbc41.jar" (runtime-name : "postgresql-9.4-1201.jdbc41.jar")
+    [0m[0m13:26:20,427 INFO [org.jboss.as] (Controller Boot Thread) JBAS015961: Http management interface listening on
+    http://127.0.0.1:9990/management
+    [0m[0m13:26:20,428 INFO [org.jboss.as] (Controller Boot Thread) JBAS015951: Admin console listening on
+    http://127.0.0.1:9990
+    [0m[0m13:26:20,428 INFO [org.jboss.as] (Controller Boot Thread) JBAS015874: WildFly 8.2.0.Final "Tweek" started in
+    11993ms - Started 233 of 289 services (90 services are lazy, passive or on-demand)
+    [0mConnected to server
+    [2015-05-08 01:26:21,360] Artifact Pokerservice:war: Artifact is being deployed, please wait...
+    [0m13:26:21,960 INFO [org.jboss.as.server.deployment] (MSC service thread 1-2) JBAS015876: Starting deployment of
+    "pokerservice.war" (runtime-name: "pokerservice.war")
+    [0m[0m13:26:23,238 INFO [org.jboss.resteasy.spi.ResteasyDeployment] (MSC service thread 1-1) Deploying
+    javax.ws.rs.core.Application: class expert.optimist.pokertracker.pokerservice.RESTConfiguration
+    [0m[0m13:26:23,307 INFO [org.hibernate.validator.internal.util.Version] (MSC service thread 1-1) HV000001:
+    Hibernate Validator 5.1.3.Final
+    [0m[0m13:26:23,431 INFO [org.wildfly.extension.undertow] (MSC service thread 1-1) JBAS017534: Registered web
+    context: /pokerservice
+    [0m[0m13:26:23,467 INFO [org.jboss.as.server] (management-handler-thread - 2) JBAS018559: Deployed
+    "pokerservice.war" (runtime-name : "pokerservice.war")
+    [0m[2015-05-08 01:26:23,526] Artifact Pokerservice:war: Artifact is deployed successfully
+    [2015-05-08 01:26:23,526] Artifact Pokerservice:war: Deploy took 2'166 milliseconds</code></pre>
+If you now open: <code>http://localhost:8080/pokerservice/resources/players</code><br/>
+You will see the players list in valid JSON:
+<pre><code class="hljs">["Dan Lopez","Robert Brem"]</code></pre>
+<h2>Start the service in a Docker container</h2>
+To let our service run in a container we first need a Wildfly image. Therefore we go to <a
+        href="https://registry.hub.docker.com/search?q=wildfly&searchfield=" target="_blank">Docker Hub</a> and search
+for Wildfly.<br/>
+Here we find an image called <strong>jboss/wildfly</strong>. We try the image out with the following Docker command:
+<pre><code class="hljs">docker run -d -p 8081:8080 -p 9991:9990 --name pokerservice jboss/wildfly</code></pre>
+<dl>
+    <dt>-d</dt>
+    <dd>tells Docker to start the container as a daemon in the background.</dd>
+    <dt>-p 8081:8080</dt>
+    <dd>tells Docker to route port 8080 inside the container to port 8081 on your host system.</dd>
+</dl>
+Hint: We route the Wildfly ports to other ports on the host system to avoid conflicts with the local Wildfly.
+<dl>
+    <dt>--name pokerservice</dt>
+    <dd>tells Docker to name this container pokerservice</dd>
+</dl>
+You can check the Docker container by:
+<pre><code class="hljs">docker ps</code></pre>
+<pre><code class="hljs">CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES
+    68f65b0accae jboss/wildfly:latest "/opt/jboss/wildfly/ About a minute ago Up About a minute 0.0.0.0:8081->8080/tcp,
+    0.0.0.0:9991->9990/tcp pokerservice</code></pre>
+If the container is not running check the log of the container with:
+<pre><code class="hljs">docker logs pokerservice</code></pre>
+If the container is running you can check your Wildfly container:<br/>
+<a href="http://localhost:8081/" target="_blank">http://localhost:8081/</a><br/>
+It should display the Wildfly home page.<br/>
+Now check the Wildfly management console:<br/>
+<a href="http://localhost:9991/" target="_blank">http://localhost:9991/</a><br/>
+Ups! It is not running. But why?<br/>
+Let us have a look at the <a href="https://registry.hub.docker.com/u/jboss/wildfly/dockerfile/" target="_blank">Dockerfile</a>:
+<pre><code class="hljs"># Use latest jboss/base-jdk:7 image as the base FROM jboss/base-jdk:7 # Set the WILDFLY_VERSION
+    env variable ENV
+    WILDFLY_VERSION 8.2.0.Final # Add the WildFly distribution to /opt, and make wildfly the owner of the extracted
+    tar content # Make sure the distribution is available from a well-known place RUN cd $HOME && curl
+    http://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz | tar zx && mv
+    $HOME/wildfly-$WILDFLY_VERSION $HOME/wildfly # Set the JBOSS_HOME env variable ENV JBOSS_HOME /opt/jboss/wildfly
+    # Expose the ports we're interested in EXPOSE 8080 # Set the default command to run on boot # This will boot
+    WildFly in the standalone mode and bind to all interface CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-b",
+    "0.0.0.0"]</code></pre>
+<dl>
+    <dt>FROM base-jdk:7</dt>
+    <dd>defines the base image for this image.</dd>
+    <dt>ENV WILDFLY_VERSION 8.2.0.Final</dt>
+    <dd>sets an environment variable with the name WILDFLY_VERSION to 8.2.0.Final.</dd>
+</dl>
+Hint: We can check that with the Docker inspect command:
+<pre><code class="hljs">docker inspect -f {{.Config.Env}} pokerservice</code></pre>
+<pre><code class="hljs">[PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    JAVA_HOME=/usr/lib/jvm/java</code></pre>
+<dl>
+    <dt>WILDFLY_VERSION=8.2.0.Final JBOSS_HOME=/opt/jboss/wildfly]
+        RUN cd $HOME && curl http://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz | tar zx
+        && mv $HOME/wildfly-$WILDFLY_VERSION $HOME/wildfly
+    </dt>
+    <dd>downloads, unzip and moves Wildfly.</dd>
+    <dt>ENV JBOSS_HOME /opt/jboss/wildfly</dt>
+    <dd>sets another environment variable.</dd>
+    <dt>EXPOSE 8080</dt>
+    <dd>allows to route the port 8080 from inside the container to the host system.</dd>
+    <dt>CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0"]</dt>
+    <dd>starts Wildfly and make a bridge that Wildfly is
+        now listening on all addresses not only <code>127.0.0.1</code>. This is needed that Docker can find the Wildfly
+        Admin console.
+    </dd>
+</dl>
+If you have a look at the output from the start of the local Wildfly you can find these two lines at the end of
+the execution:
+<pre><code class="hljs">[0m [0m13:26:20,427 INFO [org.jboss.as] (Controller Boot Thread) JBAS015961: Http management
+    interface listening
+    on http://127.0.0.1:9990/management
+    [0m [0m13:26:20,428 INFO [org.jboss.as] (Controller Boot Thread) JBAS015951: Admin console listening on
+    http://127.0.0.1:9990</code></pre>
+Here you can see that both the Admin console and the Http management interface are only listening on
+<code>127.0.0.1</code>.<br/>
+Therefore we can find three problems in this Dockerfile.
+<ol>
+    <li>The port 9990 is not exposed</li>
+    <li>There is no bridging for the Management interface</li>
+    <li>It uses Java 7 and not Java 8</li>
+</ol>
+That means we cannot use this image without adaptations. At this point you have to ask yourself if you would
+create your own image on top of this image or create a new image in parallel. In this case I prefer to create a
+new image in parallel. It is easier to use an image with Java 8 as base image than to uninstall Java 7 and
+install Java 8 by yourself.<br/>
+This is the image I use as a Wildfly image for all my Java EE services:
+<pre><code class="hljs">FROM jboss/base-jdk:8
+    MAINTAINER Robert Brem
+    &lt;brem_robert@hotmail.com&gt;
+
+    # Set the WILDFLY_VERSION env variable
+    ENV WILDFLY_VERSION 8.2.0.Final
+    ENV HOME /opt/jboss
+
+    # Add the WildFly distribution to /opt, and make wildfly the owner of the extracted tar content
+    # Make sure the distribution is available from a well-known place
+    RUN cd $HOME
+    RUN curl http://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz | tar zx
+    RUN mv $HOME/wildfly-$WILDFLY_VERSION $HOME/wildfly
+
+    # Set the JBOSS_HOME env variable
+    ENV JBOSS_HOME /opt/jboss/wildfly
+
+    # Expose the ports we're interested in
+    EXPOSE 8080 9990
+
+    RUN /opt/jboss/wildfly/bin/add-user.sh admin admin --silent
+
+    # Set the default command to run on boot
+    # This will boot WildFly in the standalone mode and bind to all interface
+    CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]</code></pre>
+It just solves the previous described problems. Additionally it creates a user <code>admin</code> with the password
+<code>admin</code> that we can access the management interface.
+<pre><code class="hljs">RUN /opt/jboss/wildfly/bin/add-user.sh admin admin --silent</code></pre>
+Hint: The password in the Dockerfile is not a good idea. In a later post about Kubernetes I will show you a
+pattern how to hide this security issue. At the moment keep in mind that is not a good idea to publish your
+passwords you use for your production environment :-)<br/>
+Here is <a href="https://github.com/robertBrem/dockerfiles" target="_blank">my
+    GitHub</a> repository with some other Dockerfiles I use for my services.<br/>
+I have saved this file in <code>/var/lib/docker/dockerfiles/wildfly</code>. This file can be built with the following
+command:
+<pre><code class="hljs">docker build --tag=wildfly /var/lib/docker/dockerfiles/wildfly</code></pre>
+<pre><code class="hljs">Sending build context to Docker daemon 2.56 kB
+    Sending build context to Docker daemon
+    Step 0 : FROM jboss/base-jdk:8
+    ---> 4be6902cb6bc
+    Step 1 : MAINTAINER Robert Brem
+    &lt;brem_robert@hotmail.com&gt;
+    ---> Using cache
+    ---> 63e7b6bebdc4
+    Step 2 : ENV WILDFLY_VERSION 8.2.0.Final
+    ---> Using cache
+    ---> 1f8228e3deb4
+    Step 3 : ENV HOME /opt/jboss
+    ---> Using cache
+    ---> 0f80c5c9c4d2
+    Step 4 : RUN cd $HOME
+    ---> Using cache
+    ---> 801d06fab921
+    Step 5 : RUN curl http://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz |
+    tar zx
+    ---> Using cache
+    ---> 6bc36b164e5b
+    Step 6 : RUN mv $HOME/wildfly-$WILDFLY_VERSION $HOME/wildfly
+    ---> Using cache
+    ---> 0082abdee810
+    Step 7 : ENV JBOSS_HOME /opt/jboss/wildfly
+    ---> Using cache
+    ---> cb0e9e24190b
+    Step 8 : EXPOSE 8080 9990
+    ---> Using cache
+    ---> ebadd1b77558
+    Step 9 : RUN /opt/jboss/wildfly/bin/add-user.sh admin admin --silent
+    ---> Using cache
+    ---> 59bada646ca9
+    Step 10 : CMD /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0
+    ---> Using cache
+    ---> 79bb4f5ba06f
+    Successfully built 79bb4f5ba06f</code></pre>
+Your built image is in your local Docker repository. Now you can use this image. But before you can
+start this image you have to stop and remove the current running <strong>pokerservice</strong> container.
+<pre><code class="hljs">docker stop pokerservice && docker rm pokerservice</code></pre>
+After the <code>pokerservice</code> container is removed you can start a container with our own image:
+<pre><code class="hljs">docker run -d -p 8081:8080 -p 9991:9990 --name pokerservice wildfly</code></pre>
+Check with the Docker <code>ps</code> command if your container is running:
+<pre><code class="hljs">docker ps</code></pre>
+<pre><code class="hljs">CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES
+    24efd80d2f0b wildfly:latest "/opt/jboss/wildfly/ About a minute ago Up About a minute
+    0.0.0.0:8081->8080/tcp,
+    0.0.0.0:9991->9990/tcp pokerservice</code></pre>
+The image name is now <code>wildfly:latest</code>.<br/>
+We can now check the URLs again:
+<a href="http://localhost:8081/" target="_blank">http://localhost:8081</a><br/>
+<a href="http://localhost:9991" target="_blank">http://localhost:9991</a><br/>
+Now the Wildfly management service should work and present you a login form. The username and password
+is <strong>admin</strong> / <strong>admin</strong>.<br/>
+Now change to the <strong>Deployments</strong> tab and click on <strong>Add</strong>.<br/>
+Choose your Maven created war file from
+<code>/home/robert/IdeaProjects/Pokertracker/Pokerservice/target/pokerservice.war</code>
+<pre>Next</pre>
+<pre>Name: Pokerservice
+Runtime Name: pokerservice.war
+Enable: Checked</pre>
+<pre>Save</pre>
+To test your deployment call the following URL:<br/>
+<a href="http://localhost:8081/pokerservice/resources/players" target="_blank">http://localhost:8081/pokerservice/resources/players</a>
+<br/>
+This should return the same as the local deployment:
+<pre><code class="hljs">["Dan Lopez","Robert Brem"]</code></pre>
+Congratulation you have your first Microservice that you can now easily deploy in the cloud or on your
+own server.

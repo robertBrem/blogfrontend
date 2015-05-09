@@ -12,6 +12,7 @@
     "angular-mocks": "~1.2.x",
     "angular-sanitize": "1.2.x",
     "angular-highlightjs": "latest",
-    "bootstrap": "latest"
+    "bootstrap": "latest",
+    "angular-bootstrap": "0.12.0"
   }
 }

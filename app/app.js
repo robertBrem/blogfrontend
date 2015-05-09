@@ -4,10 +4,13 @@ var myApp = angular.module('myApp', [
     'ngRoute',
     'ngSanitize',
     'hljs',
+    'ui.bootstrap',
     'configuration',
     'myApp.home',
     'myApp.about_me',
-    'myApp.posts'
+    'myApp.posts',
+    'myApp.footballbets',
+    'myApp.bachsanierung'
 ]);
 
 myApp.config(['$routeProvider', function ($routeProvider) {
