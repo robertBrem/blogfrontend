@@ -1,0 +1,93 @@
+<div class="col-sm-7" ng-controller="BuildingMicroservicesCtrl">
+
+    <h1>Building Microservices
+        <small>Designing fine-grained systems</small>
+    </h1>
+    <small>by Sam Newman</small>
+
+    <img src="http://akamaicovers.oreilly.com/images/0636920033158/lrg.jpg" alt="Building Microservices cover"/>
+
+    This is my personal review of the book.
+
+    <h2>Microservices
+        <small>chapter 1</small>
+    </h2>
+    This chapter is an introduction in what Microservices are. It does not contain any surprises compared to other
+    definition of Microservices. Like the definition of Markus Eisele and others, Sam Newman tells the reader that
+    understanding <strong>Bounded Context</strong> and Eric Evans book Domain-Driven Design is really important to
+    create Microservices, in particular to split the services.<br/>
+    A Microservice is small and focused on doing one thing well. Sam Newman mention the Single Responsibility Principle
+    like I did in my post about What Microservices are. Another important characteristic of Microservices is that they
+    are autonomous. Therefore it is really important that the services are loosely coupled.<br/><br/>
+    Sam Newman then explains some key benefits of Microservices, like:
+    <ul>
+        <li>Technology Heterogeneity</li>
+        <li>Resilience</li>
+        <li>Scaling</li>
+        <li>Ease of Deployment</li>
+        <li>Organizational Alignment</li>
+        <li>Composability</li>
+        <li>Optimizing for Replaceability</li>
+    </ul>
+    Important to understand is, that this benefits do not come for free. It requires a lot of work.<br/><br/>
+    <blockquote>
+        <p>So you should instead think of microservices as a specific approach for SOA in the same way that XP or Scrum
+            are specific approaches for Agile software development.</p>
+        <footer>Sam Newman</footer>
+    </blockquote>
+    I really like this definition, it reminds me on this definition.
+    <blockquote>
+        <p>Microservices = pragmatic SOA</p>
+        <footer>Adam Bien</footer>
+    </blockquote>
+    The underlying concepts of Microservices are not new, but I think it is a lot easier to implement them
+    now.<br/><br/>
+    Sam Newman give us some other decompositional techniques: Shared libraries and modules.
+
+    <h2>The Evolutionary Architect
+        <small>chapter 2</small>
+    </h2>
+    What is a good architect if you implement Microservices? This chapter covers this question.<br/>
+    With Microservices the teams and each software engineer has more power. They can choose the language they like the
+    most, the architecture inside the service that fits the needs best and so on. But some parts of each service have to
+    follow specific rules. The communication between the services should always use the same technology and follow the
+    same guidelines.
+    <blockquote>
+        <p>... think of our role more as town planners than architects for the built environment. The role of the town
+            planner should be familiar to any of you who have played SimCity before. A town planner's role is to look at
+            a multitude of sources for information, and then attempt to optimize the layout of a city to best suit the
+            needs of the citizens today, taking into account future use. The way he influences how the city evolves,
+            though, is interesting. He does not say, "build this specific building there"; instead, he zones a city. So
+            as in SimCity, you might designate part of your city as an industrial zone, and another part as a
+            residential zone. It is then up to other people to decide what exact building get created, but there are
+            restrictions: if you want to build a factory, it will need to be in an industrial zone. Rather than worrying
+            too much about what happens in one zone, the town planner will instead spend far more time working out how
+            people and utilities move from one zone to another.</p>
+        <footer>Sam Newman and Erik Doernenburg</footer>
+    </blockquote>
+    I go one step further and think we need Programmer Anarachy. But direction is the same.<br/><br/>
+    The decisions are made on three layers.
+    <ul>
+        <li>Strategic goals</li>
+        <li>Architectural principles</li>
+        <li>Design and delivery practices</li>
+    </ul>
+    The architectual principles have the goal to fulfill the strategic goals and the design and delivery practices have
+    the goal to fulfill the architectual principles.<br/><br/>
+    Sam Newman points the pros and cons of shared libraries out multiple times. If you share code in different services
+    your services are coupled tighter. But if you do not use shared code you have to implement the same functionality in
+    every service what violates the DRY principle. He also explains the importance of examples. Documentation is good, a
+    real example that is running in production is better.
+
+    <h2>How to Model Services
+        <small>chapter 3</small>
+    </h2>
+    A good service is loosely coupled and has high cohesion.<br/>
+    There are shared and hidden models. The business have a use case and expect an answer from the system. If you split
+    up you services that you have bounded contexts there are always models that are hidden in this service. These
+    services do not have to be published by the system. It is important that you do not make CRUD only services, you
+    have to target the business use case and distinct between hidden and shared models.<br/><br/>
+
+    to be continued...
+
+</div>

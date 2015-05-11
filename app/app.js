@@ -10,7 +10,8 @@ var myApp = angular.module('myApp', [
     'myApp.about_me',
     'myApp.posts',
     'myApp.footballbets',
-    'myApp.bachsanierung'
+    'myApp.bachsanierung',
+    'myApp.buildingMicroservices'
 ]);
 
 myApp.config(['$routeProvider', function ($routeProvider) {
