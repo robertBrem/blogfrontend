@@ -13,16 +13,27 @@
         <small>chapter 1</small>
     </h2>
     This chapter is an introduction in what Microservices are. It does not contain any surprises compared to other
-    definition of Microservices. Like the definition of Markus Eisele and others, Sam Newman tells the reader that
-    understanding <strong>Bounded Context</strong> and Eric Evans book Domain-Driven Design is really important to
+    definition of Microservices. Like the definition of <a href="http://blog.eisele.net/" target="_blank">Markus
+    Eisele</a> and others, Sam Newman tells the reader that
+    understanding <a href="http://martinfowler.com/bliki/BoundedContext.html" target="_blank">Bounded Context</a> and
+    Eric Evans book <a href="http://www.amazon.de/Domain-Driven-Design-Tackling-Complexity-Software/dp/0321125215"
+                       target="_blank">Domain-Driven Design</a> is really important to
     create Microservices, in particular to split the services.<br/>
-    A Microservice is small and focused on doing one thing well. Sam Newman mention the Single Responsibility Principle
-    like I did in my post about What Microservices are. Another important characteristic of Microservices is that they
-    are autonomous. Therefore it is really important that the services are loosely coupled.<br/><br/>
+    A Microservice is small and focused on doing one thing well. Sam Newman mention the <a
+        href="http://en.wikipedia.org/wiki/Single_responsibility_principle" target="_blank">Single Responsibility
+    Principle</a>
+    like I did in <a
+        href="http://optimist.engineer/#/posts/Getting_started_with_Microservices_and_Docker__Rob__2015_05_08__08_38_58"
+        target="_blank">my post</a> about Microservices. Another important characteristic of Microservices is that
+    they
+    are autonomous. Therefore it is really important that the services are <a
+        href="http://en.wikipedia.org/wiki/Loose_coupling" target="_blank">loosely coupled</a>.<br/><br/>
     Sam Newman then explains some key benefits of Microservices, like:
     <ul>
         <li>Technology Heterogeneity</li>
-        <li>Resilience</li>
+        <li>
+            <a href="http://www.resilientdesign.org/the-resilient-design-principles/" target="_blank">Resilience</a>
+        </li>
         <li>Scaling</li>
         <li>Ease of Deployment</li>
         <li>Organizational Alignment</li>
@@ -35,7 +46,7 @@
             are specific approaches for Agile software development.</p>
         <footer>Sam Newman</footer>
     </blockquote>
-    I really like this definition, it reminds me on this definition.
+    I really like this definition, it reminds me of this definition.
     <blockquote>
         <p>Microservices = pragmatic SOA</p>
         <footer>Adam Bien</footer>
@@ -49,7 +60,8 @@
     </h2>
     What is a good architect if you implement Microservices? This chapter covers this question.<br/>
     With Microservices the teams and each software engineer has more power. They can choose the language they like the
-    most, the architecture inside the service that fits the needs best and so on. But some parts of each service have to
+    most, the architecture inside the service that fits their needs best and so on. But some parts of each service have
+    to
     follow specific rules. The communication between the services should always use the same technology and follow the
     same guidelines.
     <blockquote>
@@ -65,7 +77,8 @@
             people and utilities move from one zone to another.</p>
         <footer>Sam Newman and Erik Doernenburg</footer>
     </blockquote>
-    I go one step further and think we need Programmer Anarachy. But direction is the same.<br/><br/>
+    I go one step further and think we need <a href="https://www.youtube.com/watch?v=uk-CF7klLdA" target="_blank">Programmer
+    Anarachy</a>. The direction is the same.<br/><br/>
     The decisions are made on three layers.
     <ul>
         <li>Strategic goals</li>
@@ -74,20 +87,96 @@
     </ul>
     The architectual principles have the goal to fulfill the strategic goals and the design and delivery practices have
     the goal to fulfill the architectual principles.<br/><br/>
-    Sam Newman points the pros and cons of shared libraries out multiple times. If you share code in different services
+    Sam Newman points out the pros and cons of shared libraries multiple times. If you share code in different services
     your services are coupled tighter. But if you do not use shared code you have to implement the same functionality in
-    every service what violates the DRY principle. He also explains the importance of examples. Documentation is good, a
+    every service that violates the DRY principle. He also explains the importance of examples. Documentation is good, a
     real example that is running in production is better.
 
     <h2>How to Model Services
         <small>chapter 3</small>
     </h2>
-    A good service is loosely coupled and has high cohesion.<br/>
+    A good service is <a
+        href="http://en.wikipedia.org/wiki/Loose_coupling" target="_blank">loosely coupled</a> and has <a
+        href="http://en.wikipedia.org/wiki/Cohesion_%28computer_science%29" target="_blank">high
+    cohesion</a>.<br/>
     There are shared and hidden models. The business have a use case and expect an answer from the system. If you split
-    up you services that you have bounded contexts there are always models that are hidden in this service. These
-    services do not have to be published by the system. It is important that you do not make CRUD only services, you
+    up you services there are always models that are hidden in this service. These
+    models do not have to be published by the system. It is important that you do not make CRUD only services, you
     have to target the business use case and distinct between hidden and shared models.<br/><br/>
 
-    to be continued...
+    <h2>Integration
+        <small>chapter 4</small>
+    </h2>
+    It is really important to keep the options open. Therefore keep your APIs <strong>technology-agnostic</strong>.<br/>
+    <strong>Avoid breaking changes</strong>. If you add a field to to an existing data object. The consumers
+    should not have to change. Avoid database integration at all costs.<br/>
+    <strong>Make your service simple for consumers</strong>. Like I have mentioned in <a
+        href="http://optimist.engineer/#/posts/The_first_Java_EE_Microservice__Rob__2015_05_08__17_28_05"
+        target="_blank">The first Java EE Microservice</a> a good guideline for creating
+    REST services is <a href="https://pages.apigee.com/rs/apigee/images/api-design-ebook-2012-03.pdf" target="_blank">this
+    document</a>. REST is not the only suitable technology. Sam Newman compared REST with RPC and both have pros and
+    cons, but he strongly consider REST as a good starting point.<br/>
+    <strong>Hide internal implementation detail</strong>.<br/><br/>
+
+    The differentiation between Orchestration and Choreography was new for me.
+    <blockquote>
+        <p>With orchestration, we rely on a central brain to guide and drive the process, much like the conductor in a
+            orchestra. With choreography, we inform each part of the system of its job, and let it work out the details,
+            like dancers all finding their way and reacting to others around them in a ballet.</p>
+        <footer>Sam Newman</footer>
+    </blockquote>
+    Therefore choreography is most of the time a better fit for Microservices. It is more complex than the orchestration
+    approach but with this additional complexity it is really easy to register a new service to another service. We do
+    not have to explicit model the connections between the services, it is more like: Please tell me if there is a new
+    product in our shop that I can publish this product on our website. Otherwise the first service have to know the web
+    service what lead to tighter coupling.<br/>
+    Choreography fits perfectly with a asynchronous event-based system. This and the previous discussed properties of
+    Microservices reminds me of the <a href="http://www.reactivemanifesto.org/" target="_blank">Reactive
+    Manifesto</a>.<br/><br/>
+    When it comes to versioning Sam Newman mentioned to links:
+    <ul>
+        <li><a href="http://martinfowler.com/bliki/TolerantReader.html" target="_blank">Tolerant Reader</a></li>
+        <li><a href="http://en.wikipedia.org/wiki/Robustness_principle" target="_blank">Postel's Law</a></li>
+    </ul>
+    The Postel's Law:
+    <blockquote>
+        <p>Be conservative in what you do, be liberal in what you accept from others.</p>
+        <footer>Jon Postel</footer>
+    </blockquote>
+    A lot of versioning problems can be solved with <a href="http://semver.org/" target="_blank">Semantic Versioning</a>.
+    <blockquote>
+        <p>With semantic versioning, each version number is in the form <code>MAJOR.MINOR.PATCH</code>. When the
+            <code>MAJOR</code>
+            number increments, it means that backward incompatible changes have been made. When <code>MINOR</code>
+            increments, new functionality has been added that should be backward compatible. Finally, a change to <code>PATCH</code>
+            states that bug fixes have been made to existing functionality.</p>
+        <footer>Sam Newman</footer>
+    </blockquote>
+    Sam Newman describes <strong>UI Fragment Composition</strong>.<br/>
+    The straight forward approach for a frontend would be to call service APIs to get the content of the UI. The
+    frontend then creates the controls. This can result in tight coupling. For every change always both services has to
+    be changed and deployed.
+    <strong>UI Fragment Composition</strong> means that the service returns parts of the UI directly. This part can
+    then be directly assembled in the frontend. This could result in dedicated backends for frontends:<br/>
+    <img src="images/reviews/backends_for_frontends.jpeg" alt="Backends for frontends"
+         style="max-width: 450px"/><br/>
+    Sam Newman gives this good advice for the question: <strong>Should I build, or should I buy?</strong>
+    <blockquote>
+        <p>Build if it is unique to what you do, and can be considered a strategic asset; buy if your use of the tool
+            isn't that special.</p>
+        <footer>Sam Newman</footer>
+    </blockquote>
+    I did not use an existing blog framework to make my blog because the creation of this blog with AngularJS,
+    Bootstrap, Java and so on is a strategic asset for me. :-)<br/>
+    Sam Newman gives an example where he integrated a CRM without loosing the control of the system. He masked the CRM
+    with own facades.<br/>
+    <img src="images/reviews/crm_masking.jpeg" alt="CRM masking with facades"
+         style="max-width: 450px"/><br/>
+    He also mentioned the <a href="http://martinfowler.com/bliki/StranglerApplication.html" target="_blank">Strangler
+    Pattern</a>.
+
+    <br/><br/>
+
+    <h3>to be continued...</h3>
 
 </div>
