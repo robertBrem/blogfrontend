@@ -3,9 +3,173 @@
     <div class="row">
         <div class="col-xs-12">
 
-            <pre hljs></pre>
-            <pre hljs></pre>
-            <pre hljs></pre>
+            <pre hljs language="java">package expert.optimist.pokertracker.pokerservice.control;
+
+import expert.optimist.pokertracker.pokerservice.entity.Player;
+
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+@Stateless
+public class PlayerService {
+
+    @PersistenceContext
+    EntityManager em;
+
+    public Set&lt;Player&gt; getAll() {
+        List players = em.createNamedQuery("Players.getAll").getResultList();
+        return new HashSet&lt;&gt;(players);
+    }
+
+    public boolean exist(Long id) {
+        return em.find(Player.class, id) != null;
+    }
+
+    public Player get(Long id) {
+        if (!exist(id)) {
+            throw new IllegalArgumentException("Player does not exist!");
+        }
+        return em.find(Player.class, id);
+    }
+
+    public Player create(Player player) {
+        if (player == null) {
+            throw new IllegalArgumentException("Player is not set!");
+        }
+        if (player.getId() != null && exist(player.getId())) {
+            throw new IllegalArgumentException("Player already exist!");
+        }
+        return em.merge(player);
+    }
+
+    public Player update(Player player) {
+        if (!exist(player.getId())) {
+            throw new IllegalArgumentException("Player does not exist!");
+        }
+        return em.merge(player);
+    }
+
+    public void delete(Long id) {
+        Player player = get(id);
+        em.remove(player);
+    }
+
+}</pre>
+
+            <pre hljs>package expert.optimist.pokertracker.pokerservice.boundary;
+
+import expert.optimist.pokertracker.pokerservice.control.PlayerService;
+import expert.optimist.pokertracker.pokerservice.entity.Player;
+
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import java.util.Set;
+
+@Path("players")
+public class PokerserviceEndpoint {
+
+    @Inject
+    PlayerService service;
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Set&lt;Player&gt; getAll() {
+        return service.getAll();
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Player create(Player player) {
+        return service.create(player);
+    }
+
+    @GET
+    @Path("{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Player get(@PathParam("id") Long id) {
+        return service.get(id);
+    }
+
+    @POST
+    @Path("{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Player update(@PathParam("id") Long id, Player player) {
+        if (player == null) {
+            throw new IllegalArgumentException("Player is not set!");
+        }
+        if (id == null) {
+            throw new IllegalArgumentException("Id is not set!");
+        }
+        if (player.getId() == null || !player.getId().equals(id)) {
+            throw new IllegalArgumentException("Id(" + id + ") does not match player id(" + player.getId() + ")!");
+        }
+        return service.update(player);
+    }
+
+    @DELETE
+    @Path("{id}")
+    public void delete(@PathParam("id") Long id) {
+        service.delete(id);
+    }
+
+}</pre>
+            <pre hljs>#!/bin/bash
+
+function wait_for_server() {
+  until `$JBOSS_CLI -c "ls /deployment" &&gt; /dev/null`; do
+    sleep 1
+  done
+}
+
+if [ "$TEST_MODE" ]; then
+  echo "Do not set TEST_MODE if you would hide the management service!"
+  $JBOSS_HOME/bin/add-user.sh admin admin --silent
+  $JBOSS_HOME/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0 &
+else
+  echo "Set TEST_MODE to expose the management service!"
+  $JBOSS_HOME/bin/standalone.sh -b 0.0.0.0 &
+fi
+
+echo "=&gt; Waiting for the server to boot"
+wait_for_server
+
+echo "=&gt; Downloading the db driver"
+if [ "$DB_DRIVER_PATH" ] && [ "$DB_DRIVER_NAME" ]; then
+  cd $JBOSS_HOME/standalone/deployments
+  curl -O $DB_DRIVER_PATH/$DB_DRIVER_NAME
+
+  echo "=&gt; Add the datasource"
+  if [ "$JNDI_NAME" ] && [ "$NAME" ] && [ "$CONNECTION_URL" ] && [ "$DB_USER_NAME" ] && [ "$DB_PASSWORD" ]; then
+    $JBOSS_HOME/bin/jboss-cli.sh --connect &lt;&lt;EOF
+batch
+
+data-source add --jndi-name=$JNDI_NAME --name=$NAME --connection-url=$CONNECTION_URL --driver-name=$DB_DRIVER_NAME --user-name=$DB_USER_NAME --password=$DB_PASSWORD
+
+run-batch
+exit
+EOF
+
+    if [ "$DEPLOYMENT_ARTIFACT" ]; then
+      cd $JBOSS_HOME/standalone/deployments
+      curl -O $DEPLOYMENT_ARTIFACT
+    else
+      echo "You have to set DEPLOYMENT_ARTIFACT to deploy an artifact!"
+    fi
+  else
+    echo "You have to set JNDI_NAME, NAME, CONNECTION_URL, DB_USER_NAME and DB_PASSWORD to add datasource!"
+  fi
+else
+  echo "You have to set JNDI_NAME, NAME, CONNECTION_URL, DB_USER_NAME and DB_PASSWORD to add datasource!"
+fi
+
+while true; do sleep 1000; done</pre>
             <pre hljs></pre>
 
         </div>

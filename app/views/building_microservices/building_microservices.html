@@ -133,7 +133,7 @@
     Choreography fits perfectly with a asynchronous event-based system. This and the previous discussed properties of
     Microservices reminds me of the <a href="http://www.reactivemanifesto.org/" target="_blank">Reactive
     Manifesto</a>.<br/><br/>
-    When it comes to versioning Sam Newman mentioned to links:
+    When it comes to versioning Sam Newman mentioned two links:
     <ul>
         <li><a href="http://martinfowler.com/bliki/TolerantReader.html" target="_blank">Tolerant Reader</a></li>
         <li><a href="http://en.wikipedia.org/wiki/Robustness_principle" target="_blank">Postel's Law</a></li>
@@ -154,12 +154,13 @@
     </blockquote>
     Sam Newman describes <strong>UI Fragment Composition</strong>.<br/>
     The straight forward approach for a frontend would be to call service APIs to get the content of the UI. The
-    frontend then creates the controls. This can result in tight coupling. For every change always both services has to
+    frontend then creates the controls. This can result in tight coupling. For every change always both services have to
     be changed and deployed.
     <strong>UI Fragment Composition</strong> means that the service returns parts of the UI directly. This part can
     then be directly assembled in the frontend. This could result in dedicated backends for frontends:<br/>
-    <img src="images/reviews/backends_for_frontends.jpeg" alt="Backends for frontends"
-         style="max-width: 450px"/><br/>
+    <a href="images/reviews/backends_for_frontends.jpeg" target="_blank">
+        <img src="images/reviews/backends_for_frontends_preview.jpg" alt="Backends for frontends"/>
+    </a><br/>
     Sam Newman gives this good advice for the question: <strong>Should I build, or should I buy?</strong>
     <blockquote>
         <p>Build if it is unique to what you do, and can be considered a strategic asset; buy if your use of the tool
@@ -170,10 +171,126 @@
     Bootstrap, Java and so on is a strategic asset for me. :-)<br/>
     Sam Newman gives an example where he integrated a CRM without loosing the control of the system. He masked the CRM
     with own facades.<br/>
-    <img src="images/reviews/crm_masking.jpeg" alt="CRM masking with facades"
-         style="max-width: 450px"/><br/>
+    <a href="images/reviews/crm_masking.jpeg" target="_blank">
+        <img src="images/reviews/crm_masking_preview.jpg" alt="CRM masking with facades"/>
+    </a><br/>
     He also mentioned the <a href="http://martinfowler.com/bliki/StranglerApplication.html" target="_blank">Strangler
     Pattern</a>.
+
+    <h2>Splitting the Monolith
+        <small>chapter 5</small>
+    </h2>
+    The first step to split up a monolith is to identify <strong>seams</strong>. The term seam comes from the book <a
+        href="http://www.amazon.de/Working-Effectively-Legacy-Robert-Martin/dp/0131177052" target="_blank">Working
+    Effectively with Legacy Code</a> by Michael Feathers. It defines a part of the code that can be changed without
+    affecting the rest of the code. Therefore bounded contexts are perfect seams.<br/>
+    If you have found some seams you have to check how entangled they are with the rest of the system. Often there is a
+    single database that is used from everywhere inside the system. The first step that Sam Newman does is to create
+    separate repository layers for each seam.<br/>
+    <a href="images/reviews/splitting_up_repositories.jpeg" target="_blank">
+        <img src="images/reviews/splitting_up_repositories_preview.jpg" alt="Splitting up repositories"/>
+    </a><br/>
+    The next step is to map the db tables to the corresponding seams. In most cases this table is used by more than just
+    one seam. That can be solved over an API for each seam. The table is just written by one seam and if another seam
+    need data from this table it calls the API of this seam and not the db table directly.<br/>
+    Some table are used by nearly all seams. If the content of this table is pretty static you have three options:
+    <ol>
+        <li>duplicate the table for each service</li>
+        <li>transform the date of this table into a property file and share it</li>
+        <li>extract this part in its own service</li>
+    </ol>
+    If the content is not static the third option seems to be the only possibility. Another way is to analyze the
+    shared content. Sometimes an object that is used by many services are too general and each service just needs one
+    part of this object and another service needs just another part of this object. Then you can split up this table
+    representation of this object into smaller tables.<br/>
+    <br/>
+    Now we have split up the monolith in different services with its own repositories and each repository just
+    uses its own tables. Therefore we can make an own schema for each repository.<br/>
+    The question is now, how do we release this refactoring? Sam Newman recommends to split up the schemas first and in
+    a next step to split up the services.<br/>
+    <br/>
+    The consequences are when we talk about transactions. In a monolith with one schema you can easily use transactions.
+    If you split everything up you have to do a lot more to archive a similar behaviour. Most of the time you can life
+    with <strong>eventual consistency</strong>.
+    <blockquote>
+        <p>Rather than using a transactional boundary to ensure that the system is a consistent state when the
+            transaction completes, instead we accept that the system will get itself into a consistent state at some
+            point in the future.</p>
+        <footer>Sam Newman</footer>
+    </blockquote>
+    Adam Bien often refers to the <a href="http://en.wikipedia.org/wiki/CAP_theorem" target="_blank">CAP theorem</a> and
+    explains that you can have two out of these three, but never all three. What often results in the decision: Would I
+    have the possibility to scale my system or does the system always have to be consistent. One goal of Microservices
+    are the saleability therefore I think if you decide to implement Microservices you should life with eventual
+    consistency the most of your time.<br/>
+    There is the possibility of <strong>distributed transactions</strong> but they are really hard to implement
+    correctly and they can limit scalability.<br/>
+    <br/>
+    Reporting is always a special field. In a monolithic application it is pretty simple to generate reports. You can
+    create one query that gives you all your information back from the database. If you have split up your services it
+    isn't that simple anymore. If you have to call the data form the APIs that can be very slow and makes the service
+    for the daily business slow too. Sam Newman describes <strong>data pumps</strong> as a first solution. The services
+    pushes periodically its data to a central reporting database. The reports can then be produced the same way like
+    with a monolith. You have one big db with all the needed data.<br/>
+    This system can be extended to <strong>event data pumps</strong>. If you have an event based system (choreography
+    over orchestration) then you can send the data that have changed to the reporting database just after the change
+    happened.<br/>
+    A third approach that is used by Netflix are <strong>backup data pumps</strong>. If you make backups of your data
+    anyway you can use this backups for your reporting system. Netflix has open sourced this project too. It is called
+    <a href="https://github.com/Netflix/aegisthus" target="_blank">Aegisthus</a>.
+
+    <h2>Deployment
+        <small>chapter 6</small>
+    </h2>
+    From my point of view automation is the most important aspect of Microservices and software engineering at all. A
+    good source for further reading and watching is all about <strong>continuous integration</strong>, <strong>continous
+    deployment</strong>, <strong>continuous delivery</strong>, <strong>lean</strong>... especially the books from Jez
+    Humble <a
+        href="http://www.amazon.de/Continuous-Delivery-Deployment-Automation-Addison-Wesley/dp/0321601912/ref=sr_1_1?ie=UTF8&qid=1432291346&sr=8-1&keywords=jez+humble"
+        target="_blank">
+    Continuous Delivery</a> or <a
+        href="http://www.amazon.de/Lean-Enterprise-Performance-Organizations-Innovate/dp/1449368425/ref=sr_1_3?ie=UTF8&qid=1432291346&sr=8-3&keywords=jez+humble"
+        target="_blank">Lean Enterprise</a>. There are also some good <a
+        href="https://www.youtube.com/results?search_query=jez+humble" target="_blank">Youtube</a> videos from Jez
+    Humble. Jez Humble ask the following three questions about CI, to check if you really do CI:
+    <ol>
+        <li>Do you check in to mainline once per day?</li>
+        <li>Do you have a suite of tests to validate your changes?</li>
+        <li>When the build is broken, is it the #1 priority of the team to fix it?</li>
+    </ol>
+    If you answer one of these questions with no, you are not doing CI.<br/>
+    <br/>
+    The goal of CI is that every change in the source code repository triggers a build of the corresponding service and
+    its unit tests. It triggers just the pipeline of this service. Therefore you need the possibility to release your
+    service independently from each other.<br/>
+    When the build and the tests are successful an artifact is created. Then the next stages of the CI
+    system are triggered, like static code analysis, integration and acceptance tests, manually usability tests, ... I
+    really like the <a href="https://wiki.jenkins-ci.org/display/JENKINS/Build+Pipeline+Plugin" target="_blank">Pipeline
+    Plugin</a> from Jenkins. <a href="http://blog.eisele.net/2015/04/continuous-delivery-with-docker.html"
+                                target="_blank">This</a> is a interview and demonstration of the plugin from Thomas
+    Qvarnstrom and it is really worth to watch.<br/>
+    <br/>
+    Sam Newman shows a standard release process model for a build pipeline:
+    <pre>Compile & fast test -> Slow tests -> user acceptance testing -> performance testing -> production</pre>
+    The goal is that we can automate everything and that your deployment environment is as similar to the production
+    environment as possible but with fast feedback to the developer. Therefore you need some type of virtualization. Sam
+    Newman mentioned technologies like Chef, Puppet, Vagrant, VMWare, VirtualBox and my favorite Docker. That you can
+    automate as everything you have to avoid <strong>configuration drift</strong>. A configuration drift arises if a dev
+    or ops is making changes to the environment directly in the program and not in the scripts for the automated set up.
+    If you avoid a configuration drift you get <strong>immutable servers</strong>. Immutable servers can easily and fast
+    be set up with a singe click and no further configuration.<br/>
+    <br/>
+    If it comes to the different environments the question arises how to handle environment specific settings like
+    username and passwords or database connections. It is not a good idea to check them into your source system, but it
+    is also not a good idea to always enter them manually every time. A good approach is to create a property file per
+    environment or to create a dedicated system for providing configuration. It is important to keep this configuration
+    to an absolute minimum.<br/>
+    <br/>
+    Every service should run in its own host to avoid side effects from the other services. Even better is to divide
+    your single service further and for example extract the db out in an own host. If you have hundreds of services it
+    is nearly impossible to do that without virtualization. I think the best solution at the moment is <a
+        href="http://optimist.engineer/#/posts/Getting_started_with_Microservices_and_Docker__Rob__2015_05_08__08_38_58"
+        target="_blank">Docker</a> it is amazing fast and easy compared to other virtualization tools.
 
     <br/><br/>
 
