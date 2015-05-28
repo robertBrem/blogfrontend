@@ -191,7 +191,7 @@
         <img src="images/reviews/splitting_up_repositories_preview.jpg" alt="Splitting up repositories"/>
     </a><br/>
     The next step is to map the db tables to the corresponding seams. In most cases this table is used by more than just
-    one seam. That can be solved over an API for each seam. The table is just written by one seam and if another seam
+    one seam. That can be solved over an API for each seam. The table get just written by one seam and if another seam
     need data from this table it calls the API of this seam and not the db table directly.<br/>
     Some table are used by nearly all seams. If the content of this table is pretty static you have three options:
     <ol>
@@ -202,7 +202,7 @@
     If the content is not static the third option seems to be the only possibility. Another way is to analyze the
     shared content. Sometimes an object that is used by many services are too general and each service just needs one
     part of this object and another service needs just another part of this object. Then you can split up this table
-    representation of this object into smaller tables.<br/>
+    representation into smaller tables.<br/>
     <br/>
     Now we have split up the monolith in different services with its own repositories and each repository just
     uses its own tables. Therefore we can make an own schema for each repository.<br/>
@@ -252,7 +252,7 @@
         href="http://www.amazon.de/Lean-Enterprise-Performance-Organizations-Innovate/dp/1449368425/ref=sr_1_3?ie=UTF8&qid=1432291346&sr=8-3&keywords=jez+humble"
         target="_blank">Lean Enterprise</a>. There are also some good <a
         href="https://www.youtube.com/results?search_query=jez+humble" target="_blank">Youtube</a> videos from Jez
-    Humble. Jez Humble ask the following three questions about CI, to check if you really do CI:
+    Humble as well. Jez Humble ask the following three questions about CI, to check if you really do CI:
     <ol>
         <li>Do you check in to mainline once per day?</li>
         <li>Do you have a suite of tests to validate your changes?</li>
@@ -275,13 +275,13 @@
     The goal is that we can automate everything and that your deployment environment is as similar to the production
     environment as possible but with fast feedback to the developer. Therefore you need some type of virtualization. Sam
     Newman mentioned technologies like Chef, Puppet, Vagrant, VMWare, VirtualBox and my favorite Docker. That you can
-    automate as everything you have to avoid <strong>configuration drift</strong>. A configuration drift arises if a dev
+    automate you have to avoid a <strong>configuration drift</strong>. A configuration drift arises if a dev
     or ops is making changes to the environment directly in the program and not in the scripts for the automated set up.
     If you avoid a configuration drift you get <strong>immutable servers</strong>. Immutable servers can easily and fast
     be set up with a singe click and no further configuration.<br/>
     <br/>
     If it comes to the different environments the question arises how to handle environment specific settings like
-    username and passwords or database connections. It is not a good idea to check them into your source system, but it
+    usernames and passwords or database connections. It is not a good idea to check them into your source system, but it
     is also not a good idea to always enter them manually every time. A good approach is to create a property file per
     environment or to create a dedicated system for providing configuration. It is important to keep this configuration
     to an absolute minimum.<br/>
@@ -291,6 +291,110 @@
     is nearly impossible to do that without virtualization. I think the best solution at the moment is <a
         href="http://optimist.engineer/#/posts/Getting_started_with_Microservices_and_Docker__Rob__2015_05_08__08_38_58"
         target="_blank">Docker</a> it is amazing fast and easy compared to other virtualization tools.
+
+    <h2>Testing
+        <small>chapter 7</small>
+    </h2>
+    Sam Newman introduces this chapter with the definition of the different test scopes. He distinguish between:<br/>
+    A <strong>Unit Test</strong> tests an isolated small part of the service. These tests are pretty straight forward
+    with no magic involved.<br/>
+    A <strong>Service Test</strong> tests the service API. It tests the service isolated of the rest of the system,
+    without the UI. For the Service Tests we need to stub or mock the other services that get called by this
+    service.<br/>
+    A <strong>End-to-End Test</strong> tests a user interaction. What happens when the user fill out this form and then
+    submits it? Because these tests involve that many moving parts these are very flaky and brittle. It can happen that
+    these tests are so flaky that sometimes they are green and sometimes they fail. You should limit these tests to a
+    minimum. Just test general journeys and not every story or every boundary condition. Instead of End-to-End Tests try
+    to replace them with <strong>Consumer-Driven
+    Tests</strong>.<br/>
+    <br/>
+    With <strong>Consumer-Driven Tests</strong> you test other services if they return the expected value for your
+    service. You define a consumer-driven contract (CDC) and test against this contract. The benefit of these tests
+    compared with End-to-End Tests are that you have a package of tests. With End-to-End Tests many people and teams are
+    involved and if a test fails nobody think he is responsible for this failure. An other advantage is that your can
+    reduce the complexity and therefore the moving parts of the test as well. The tests are less flaky and brittle.<br/>
+    Sam Newman mentioned <a href="https://github.com/realestate-com-au/pact" target="_blank">Pact</a> and <a
+        href="https://github.com/thoughtworks/pacto" target="_blank">Pacto</a> as a testing tool for Consumer-Driven
+    Tests.<br/>
+    <br/>
+    The more you can test with lower complex tests the better. You can archive that when you write a lower complex
+    test when a high complex test fails. For example an End-to-End Test fails, you found the solution for the problem
+    and then you write a Service Test for this special case. If a Service Test fails and you have found the solution
+    write a Unit Test for this special case. If a Unit Test fails you know exactly where the failure happened and you
+    just have to understand a small amount of lines instead of tracking down the whole system or service. Another
+    important benefit of low complex test is the fast feedback. The faster you get feedback the more present is the
+    changed code and you can solve the problem easier.<br/>
+    <br/>
+    At the end of the build pipeline there a special kinds of tests, the <strong>Performance Tests</strong>. You should
+    pay attention to the same properties for performance tests as to the other kind of tests. Try to test
+    small parts for performance. If you found a performance issue in a more complex test try to test the cause of the
+    problem in a smaller test. It is also important to define boundaries for the performance tests, a performance test
+    that never fail has no value.<br/>
+    <br/>
+    Testing after production is as important as pre production tests. Sam Newman mentioned the <strong>Mean Time To
+    Repair</strong> (<strong>MTTR</strong>) and the <strong>Mean Time Between Failures</strong> (<strong>MTBF</strong>).
+    And that reducing the MTTR can be significantly more beneficial than to try to lower MTBF with adding more automated
+    tests.
+    <blockquote>
+        <p>If we can spot a problem in production early, and roll back early, we reduce the impact to our costumers. We
+            can also use techniques like blue/green deployment, where we deploy a new version of our software and test
+            it in situ prior to directing our users to the new version.</p>
+        <footer>Sam Newman</footer>
+    </blockquote>
+    <strong>Blue/green deployment</strong> labeled a deployment that implies that when we deploy our new service
+    additionally to the
+    current running service. Then we can test our new service in our production environment while the production request
+    still use our current service. If our tests on the new service pass we can redirect the production requests to our
+    new service and if everything works great terminate the old service.<br/>
+    A really cool release technique is <strong>Canary Releasing</strong>. Canary Releasing goes a step further than
+    blue/green deployment. You can deploy the new service and redirect a specific amount of production requests to the
+    new service. If the the new service runs as expected you can increase the amount of requests for the new service and
+    at some point redirect all requests to the new service and terminate the old service. This also allows you to make
+    business tests on the services. With the old service 5% of our customers bought something, with the new service 15%
+    of our customers bought something. If the result is not satisfying you can redirect the requests to the other
+    service.
+
+    <h2>Monitoring
+        <small>chapter 8</small>
+    </h2>
+    When it comes to monitoring Sam Newman differs between:<br/>
+    <strong>Single Service, Single Server</strong>, this is the simplest starting point. We have one machine to monitor
+    (CPU, RAM, storage, network) and one service with one log file to monitor.<br/>
+    <strong>Single Service, Multiple Servers</strong>, in this case we let our service run behind a load balancer. We
+    now have multiple machines and multiple services with multiples log files to monitor. But we still can restrict some
+    problems, for example if the same failure happens on all services and machines, the possibility is really high that
+    the error is in the service and not on the machine. If the failure happened on one machine the probability is
+    high that it is just a problem with this single machine and not with the service implementation.<br/>
+    The hardest scenario to monitor is <strong>Multiple Services, Multiple Servers</strong>. In this case it is really
+    hard to find the cause of a problem, it can be anything.<br/>
+    This chapter contains a lot of tool references that help you to consolidate all the log files and allow you to track
+    metrics across multiple servers.
+    <ul>
+        <li><a href="https://www.elastic.co/products/logstash" target="_blank">logstash</a></li>
+        <li><a href="https://www.elastic.co/products/kibana" target="_blank">Kibana</a></li>
+        <li><a href="http://graphite.wikidot.com/documentation" target="_blank">Graphite</a></li>
+        <li><a href="https://dropwizard.github.io/metrics/3.1.0/" target="_blank">Codahale's Metrics library</a></li>
+        <li><a href="https://www.nagios.org/" target="_blank">Nagios</a></li>
+        <li><a href="http://riemann.io/" target="_blank">Riemann</a></li>
+        <li><a href="https://github.com/Netflix/suro" target="_blank">Suro</a></li>
+        <li>(<a href="http://twitter.github.io/zipkin/" target="_blank" style="font-style: italic">Zipkin</a>)</li>
+    </ul>
+    If you have an event based system and a failure happens, it is really hard to find the root of the problem. Sam
+    Newman describes the <strong>Correlation IDs</strong> as possible assistance. A Correlation ID is created for every
+    new call that is made. This ID get passed to every subsequent call. If now an error happens we can filter our log
+    files for the Correlation ID and can step upwards the call history.<br/>
+    <br/>
+    It is important to consider the audience for the monitoring. Sam Newman gives you three questions you should
+    consider for your monitoring decision:
+    <ul>
+        <li>What they need to know right now?</li>
+        <li>What they might want later?</li>
+        <li>How they like to consume data?</li>
+    </ul>
+    Like mentioned in the testing chapter, monitoring is extremely powerful if you have the right focus. Fred George
+    mentioned in his talks that he omit acceptance tests, because monitoring with business scope is the best acceptance
+    test ever. The company does not care if the response time in the new version is some milliseconds worse than before
+    when the profit increased by 25%.
 
     <br/><br/>
 
